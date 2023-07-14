@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hellostrapi/create.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
@@ -12,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -35,10 +37,17 @@ class _MyHomePageState extends State<MyHomePage> {
   int total = 0;
   var dataJson;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getDataFromStrapi();
+  }
+
   void _getDataFromStrapi() async {
     var response =
         await http.get(Uri.parse("http://localhost:1337/api/tabel-mahasiswas"));
-    dataJson = jsonDecode(response.body);
+    dataJson = await jsonDecode(response.body);
     print(dataJson["meta"]["pagination"]["total"]);
     setState(() {
       total = dataJson["meta"]["pagination"]["total"];
@@ -56,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
           itemBuilder: (context, index) {
             return ListTile(
               title:
-                  Text(dataJson["data"][index]["attributes"]["nama_mahasiswa"]),
+                  Text(dataJson["data"][index]["attributes"]["Nama_Mahasiswa"]),
               leading: Icon(Icons.person),
               trailing: IconButton(
                   onPressed: () async {
@@ -69,7 +78,10 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }),
       floatingActionButton: FloatingActionButton(
-        onPressed: _getDataFromStrapi,
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreatePage()));
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
